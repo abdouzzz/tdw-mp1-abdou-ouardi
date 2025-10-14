@@ -8,7 +8,7 @@ const POST_GRAPHQL_FIELDS = `
   author {
     ... on Author {
       name
-      picture {
+      image {
         url
       }
     }
