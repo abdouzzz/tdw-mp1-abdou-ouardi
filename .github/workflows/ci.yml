@@ -43,9 +43,13 @@ jobs:
       - name: Run Jest tests
         run: npm test -- --coverage
 
-      # 6️⃣ Build du projet
+      # 6️⃣ Build du projet avec variables Contentful
       - name: Build project
         run: npm run build
+        env:
+          CONTENTFUL_SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
+          CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
+          CONTENTFUL_ENVIRONMENT: ${{ secrets.CONTENTFUL_ENVIRONMENT }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -58,5 +62,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # 🧩 Déploiement Netlify avec les mêmes variables Contentful
       - name: Deploy to Netlify
         run: npx netlify-cli deploy --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --prod
+        env:
+          CONTENTFUL_SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
+          CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
+          CONTENTFUL_ENVIRONMENT: ${{ secrets.CONTENTFUL_ENVIRONMENT }}
