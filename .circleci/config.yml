@@ -1,40 +1,40 @@
 version: 2.1
 
 jobs:
-  build-and-test:
-    docker:
-      - image: cimg/node:18.20  # Image officielle Node.js CircleCI
-    steps:
-      - checkout
-
-      # 1️⃣ Installer les dépendances
-      - run:
-          name: Install dependencies
-          command: npm ci
-
-      # 2️⃣ Vérifier le formatage avec Prettier
-      - run:
-          name: Run Prettier
-          command: npm run prettier --if-present
-
-      # 3️⃣ Lancer les tests Jest
-      - run:
-          name: Run Jest tests
-          command: npm test -- --coverage
-
-      # 4️⃣ Build du projet
-      - run:
-          name: Build project
-          command: npm run build
-
-  deploy:
+  # 🔧 Étape 1 : Installer, tester et construire ton projet
+  build_and_test_project:
     docker:
       - image: cimg/node:18.20
     steps:
       - checkout
+
       - run:
           name: Install dependencies
           command: npm ci
+
+      - run:
+          name: Check code formatting (Prettier)
+          command: npm run prettier --if-present
+
+      - run:
+          name: Run unit tests (Jest)
+          command: npm test -- --coverage
+
+      - run:
+          name: Build project
+          command: npm run build
+
+  # 🚀 Étape 2 : Déploiement sur Netlify
+  deploy_to_netlify:
+    docker:
+      - image: cimg/node:18.20
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: npm ci
+
       - run:
           name: Deploy to Netlify
           command: |
@@ -43,13 +43,14 @@ jobs:
               --auth $NETLIFY_AUTH_TOKEN \
               --prod
 
+# ⚙️ Workflow qui relie les étapes
 workflows:
-  full-pipeline:
+  ci_cd_pipeline:
     jobs:
-      - build-and-test
-      - deploy:
+      - build_and_test_project
+      - deploy_to_netlify:
           requires:
-            - build-and-test
+            - build_and_test_project
           filters:
             branches:
               only: main
