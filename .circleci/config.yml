@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  # 🔧 Étape 1 : Installer, tester et construire ton projet
+  # 🔧 Étape 1 : Installer, tester et construire le projet
   build_and_test_project:
     docker:
       - image: cimg/node:18.20
@@ -21,8 +21,12 @@ jobs:
           command: npm test -- --coverage
 
       - run:
-          name: Build project
+          name: Build project (Next.js)
           command: npm run build
+        environment:
+          CONTENTFUL_SPACE_ID: $CONTENTFUL_SPACE_ID
+          CONTENTFUL_ACCESS_TOKEN: $CONTENTFUL_ACCESS_TOKEN
+          CONTENTFUL_PREVIEW_ACCESS_TOKEN: $CONTENTFUL_PREVIEW_ACCESS_TOKEN
 
   # 🚀 Étape 2 : Déploiement sur Netlify
   deploy_to_netlify:
@@ -42,8 +46,14 @@ jobs:
               --site $NETLIFY_SITE_ID \
               --auth $NETLIFY_AUTH_TOKEN \
               --prod
+        environment:
+          CONTENTFUL_SPACE_ID: $CONTENTFUL_SPACE_ID
+          CONTENTFUL_ACCESS_TOKEN: $CONTENTFUL_ACCESS_TOKEN
+          CONTENTFUL_PREVIEW_ACCESS_TOKEN: $CONTENTFUL_PREVIEW_ACCESS_TOKEN
+          NETLIFY_SITE_ID: $NETLIFY_SITE_ID
+          NETLIFY_AUTH_TOKEN: $NETLIFY_AUTH_TOKEN
 
-# ⚙️ Workflow qui relie les étapes
+# ⚙️ Workflow principal
 workflows:
   ci_cd_pipeline:
     jobs:
